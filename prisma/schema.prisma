@@ -9,3 +9,31 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                   String        @id @default(uuid())
+  firstName            String
+  lastName             String
+  document             String        @unique
+  email                String        @unique
+  password             String
+  balance              Float
+  userType             String
+  SenderTransactions   Transaction[] @relation("Sender")
+  ReceiverTransactions Transaction[] @relation("Receiver")
+
+  @@map("users")
+}
+
+model Transaction {
+  id         String   @id @default(uuid())
+  amount     Float
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("transactions")
+}
