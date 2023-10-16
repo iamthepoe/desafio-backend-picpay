@@ -17,6 +17,8 @@ async function bootstrap() {
     .setTitle('Mini PicPay')
     .setDescription('Desafio de Back-end do PicPay')
     .setVersion('1.0')
+    .addTag('Users')
+    .addTag('Transactions')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

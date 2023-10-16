@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { PrismaService } from '../database/prisma.service';
@@ -33,19 +33,25 @@ export class TransactionsService {
   }
 
   findAll() {
-    return `This action returns all transactions`;
+    return this.prisma.transaction.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} transaction`;
+  async findOne(id: string) {
+    const transaction = await this.prisma.transaction.findFirst({ where: { id } });
+    if (!transaction) throw new NotFoundException('Transação não encontrada.');
+
+    return transaction;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
+  async update(id: string, data: UpdateTransactionDto) {
+    const transaction = await this.prisma.transaction.findFirst({ where: { id } });
+    if (!transaction) throw new NotFoundException('Transação não encontrada.');
+
+    return this.prisma.transaction.update({ where: { id }, data });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  remove(id: string) {
+    return this.prisma.transaction.delete({ where: { id } });
   }
 
   async authorizeTransaction() {
